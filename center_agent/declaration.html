@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Declarations Page</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="banner2">
+  <h1 class="txt">Declarations</h1>
+  <table id="declarations-table">
+    <tr class="header">
+      <th>Title</th>
+    </tr>
+  </table>
+  <button class="Rtr" onclick="navigateTo('alerts.html')" id="btn"> alerts</button>
+
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCe9EoDZrZzDm1enpSgGf_2XMTBMs-MqrI",
+  authDomain: "safetypp-ebc33.firebaseapp.com",
+  databaseURL: "https://safetypp-ebc33-default-rtdb.firebaseio.com",
+  projectId: "safetypp-ebc33",
+  storageBucket: "safetypp-ebc33.appspot.com",
+  messagingSenderId: "427252385313",
+  appId: "1:427252385313:web:c7d787457e0605ea9d8560",
+  measurementId: "G-T36Y89YW6Z"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Function to retrieve data from the "declarations" table
+    function getDeclarationsData() {
+      return firebase.database().ref("declarations").once("value")
+        .then(function(snapshot) {
+          return snapshot.val();
+        });
+    }
+    function navigateTo(page) {
+      window.location.href = page;
+    }
+
+    // Function to generate the declarations table HTML based on the retrieved data
+    function generateDeclarationsTable() {
+      getDeclarationsData().then(function(declarationsData) {
+        const table = document.getElementById("declarations-table");
+
+        // Add each declaration as a table row
+        for (const declarationKey in declarationsData) {
+          const declaration = declarationsData[declarationKey];
+          const row = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.textContent = declarationKey;
+
+          // Add click event listener to show alert with declaration details
+          cell.addEventListener("click", function() {
+            showDetailsAlert(declaration);
+          });
+
+          row.appendChild(cell);
+          table.appendChild(row);
+        }
+      });
+    }
+
+    // Function to show alert with declaration details
+    function showDetailsAlert(declaration) {
+      const details = `Incident Type: ${declaration.incidentType}\n`
+        + `Image URL: ${declaration.imageURL}\n`
+        + `Recording Status: ${declaration.recordingStatus}\n`
+        + `Location: Lat: ${declaration.location.latitude}, Long: ${declaration.location.longitude}\n`
+        + `Description: ${declaration.description}`;
+
+      alert(details);
+    }
+
+    // Call the generateDeclarationsTable function to populate the table on page load
+    window.addEventListener("load", generateDeclarationsTable);
+  </script>
+  </div>
+</body>
+</html>
